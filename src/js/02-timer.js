@@ -4,7 +4,6 @@ import 'flatpickr/dist/flatpickr.min.css';
 
 import Notiflix from 'notiflix';
 
-
 const options = {
   enableTime: true,
   time_24hr: true,
@@ -12,10 +11,9 @@ const options = {
   minuteIncrement: 1,
   onClose(selectedDates) {
     date = new Date(selectedDates[0]);
-    clearInterval(intervalId);
     toZero();
     if (Date.now() > date) {
-      Notiflix.Notify.failure("Please choose a date in the future");
+      Notiflix.Notify.failure('Please choose a date in the future');
       if (!startButton.hasAttribute('disabled')) {
         startButton.setAttribute('disabled', '');
         startButton.removeEventListener('click', begin);
@@ -39,10 +37,13 @@ startButton.setAttribute('disabled', '');
 let date;
 let intervalId;
 function begin() {
-  update();
-  intervalId = setInterval(update, 1000);
+  if (date > Date.now()) {
+    update();
+    intervalId = setInterval(update, 1000);
+  }
 }
 function toZero() {
+  clearInterval(intervalId);
   secondsEl.textContent = '00';
   minutesEl.textContent = '00';
   hoursEl.textContent = '00';
@@ -67,14 +68,17 @@ function convertMs(ms) {
 
   return { days, hours, minutes, seconds };
 }
-function addLeadingZero(value){
-  if(value<10){
-    value = value.toString().padStart(2,"0");
+function addLeadingZero(value) {
+  if (value < 10) {
+    value = value.toString().padStart(2, '0');
   }
   return value;
 }
 function update() {
-  let res = convertMs(date-Date.now());
+  let res = convertMs(date - Date.now());
+  if (res.seconds == 0 && res.minutes == 0 && res.hours == 0 && res.days == 0) {
+    toZero();
+  }
   secondsEl.textContent = addLeadingZero(res.seconds);
   minutesEl.textContent = addLeadingZero(res.minutes);
   hoursEl.textContent = addLeadingZero(res.hours);
