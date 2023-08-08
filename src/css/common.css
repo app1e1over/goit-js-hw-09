@@ -16,3 +16,8 @@ img {
   display: block;
   max-width: 100%;
 }
+#color-hex{
+  cursor: pointer;
+  margin-top: auto;
+  text-align: center;
+}
